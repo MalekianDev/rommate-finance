@@ -1,28 +1,28 @@
 import uuid
 
-from aiogram import Router, F
-from aiogram.utils.deep_linking import decode_payload
+from aiogram import Bot, Router, F
 from aiogram.filters import CommandStart, CommandObject
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
+from aiogram.utils.deep_linking import create_start_link, decode_payload
+
+from telegram.states import RegistrationStates
+from telegram.helpers import get_first_stage
+from telegram.keyboards import main_menu_keyboard, manage_rooms_keyboard
 
 from db.enums import ProviderEnum
 from db.models import Account, Room, RoomMember
 from repositories import UserRepository, AccountRepository, RoomRepository, RoomMemberRepository
-from telegram.keyboards import main_menu_keyboard
-from telegram.states import RegistrationStates
-from telegram.helpers import get_first_stage
 
 router = Router()
 
 
 @router.message(CommandStart(deep_link=True))
-async def handle_join_start(message: Message, command: CommandObject) -> None:
+async def handle_join_start(message: Message, command: CommandObject, bot: Bot) -> None:
     room_member_repo = RoomMemberRepository()
+    invite_token = uuid.UUID(decode_payload(command.args))
 
-    room_id = await RoomRepository().find(
-        filters=[Room.invite_token == uuid.UUID(decode_payload(command.args)).hex], columns=[Room.id]
-    )
+    room_id = await RoomRepository().find(filters=[Room.invite_token == invite_token.hex], columns=[Room.id])
 
     if not room_id:
         await message.answer("Invalid invite token.")
@@ -32,6 +32,13 @@ async def handle_join_start(message: Message, command: CommandObject) -> None:
         filters=[Account.uid == str(message.from_user.id), Account.provider == ProviderEnum.TELEGRAM],
         columns=[Account.user_id],
     )
+    if not user_id:
+        await message.answer(
+            "Please use /start command to register first; then try to join the room again using the below URL:\n\n"
+            f"<a href='{await create_start_link(bot, invite_token, encode=True)}'>INVITE LINK</a>",
+        )
+        return
+
     room_member = await room_member_repo.find(
         filters=[RoomMember.room_id == room_id, RoomMember.user_id == user_id], columns=[RoomMember.id]
     )
@@ -42,7 +49,7 @@ async def handle_join_start(message: Message, command: CommandObject) -> None:
 
     # TODO -> Add a "JoinRequest" concept to handle room requests instead of directly adding to the room.
     await room_member_repo.create(RoomMember(room_id=room_id, user_id=user_id))
-    await message.answer("✅ You have joined the room.")
+    await message.answer("✅ You have joined the room.", reply_markup=main_menu_keyboard())
 
 
 @router.message(CommandStart())
@@ -64,17 +71,13 @@ async def handle_name(message: Message, state: FSMContext) -> None:
         return
 
     try:
-        user = await UserRepository().register_user(
+        await UserRepository().register_user(
             name=name,
             username=str(message.from_user.id),
             provider=ProviderEnum.TELEGRAM,
             uid=str(message.from_user.id),
         )
         await state.clear()
-        await message.answer(
-            f"✅ Welcome, {user.name}!\n\n"
-            f"{'You are registered as superuser.' if user.is_superuser else 'You are registered.'}",
-            reply_markup=main_menu_keyboard(is_superuser=user.is_superuser),
-        )
+        await message.answer("Now you need an active room:", reply_markup=manage_rooms_keyboard(has_active_room=False))
     except ValueError as e:
         await message.answer(f"❌ Registration failed: {e}")

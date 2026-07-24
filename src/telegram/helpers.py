@@ -1,5 +1,5 @@
 from aiogram.fsm.context import FSMContext
-from aiogram.types import ReplyKeyboardMarkup
+from aiogram.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
 
 from db.models import Account
 from repositories import UserRepository, AccountRepository
@@ -13,7 +13,7 @@ async def get_first_stage(
     state: FSMContext | None = None,
     account: Account | None = None,
     custom_text: str | None = None,
-) -> tuple[str, ReplyKeyboardMarkup]:
+) -> tuple[str, ReplyKeyboardRemove] | tuple[str, ReplyKeyboardMarkup]:
     """
     Get the first stage of the conversation.
 
@@ -27,7 +27,8 @@ async def get_first_stage(
         state: The FSM context.
         custom_text: The custom text to show to the user.
 
-    Return:
+    Returns:
+        tuple[str, None]: If user is not registered.
         tuple[str, ReplyKeyboardMarkup]: The text and keyboard to show to the user.
     """
     if account is None:
@@ -44,7 +45,7 @@ async def get_first_stage(
         if state:
             await state.clear()
     else:
-        text, keyboard = custom_text or "👋 Welcome! Let's get you registered.\n\nWhat's your name?"
+        text, keyboard = "👋 Welcome! Let's get you registered.\n\nWhat's your name?", ReplyKeyboardRemove()
         await state.set_state(RegistrationStates.name)
 
     return text, keyboard
