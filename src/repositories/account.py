@@ -1,8 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
-from db.models import Account
 from db.enums import ProviderEnum
+from db.models import Account
 from repositories.base import BaseRepository
 
 

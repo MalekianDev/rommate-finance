@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
-from db.models import User, Room, RoomMember
+from db.models import Room, RoomMember, User
 from repositories.base import BaseRepository
 
 

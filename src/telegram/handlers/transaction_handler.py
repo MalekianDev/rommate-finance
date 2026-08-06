@@ -4,21 +4,26 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
 from db.models import Category
-from repositories import AccountRepository, CategoryRepository, TransactionRepository, UserRepository
+from repositories import (
+    AccountRepository,
+    CategoryRepository,
+    TransactionRepository,
+    UserRepository,
+)
 from schemas import TransactionDraft
 from services import build_transaction_draft
-
 from telegram.helpers import _format_draft_summary, get_first_stage
 from telegram.keyboards import transaction_confirmation_keyboard
 from telegram.states import TransactionStates
 
 router = Router()
 
+
 @router.message(F.text == "📝 Add Transaction")
 async def prompt_transaction(message: Message) -> None:
     await message.answer(
         "Describe the transaction in natural language.\n\n"
-        'Example: I paid 50000 tomans for groceries, split equally with Ali and Sara.'
+        "Example: I paid 50000 tomans for groceries, split equally with Ali and Sara."
     )
 
 

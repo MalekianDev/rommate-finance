@@ -1,9 +1,9 @@
-from sqlalchemy import select, exists
+from sqlalchemy import exists, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import aliased
 
 from db.enums import ProviderEnum
-from db.models import Account, User, RoomMember
+from db.models import Account, RoomMember, User
 from repositories.base import BaseRepository
 
 

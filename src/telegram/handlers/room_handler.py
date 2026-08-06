@@ -1,13 +1,12 @@
-from aiogram import Bot, Router, F
-from aiogram.types import Message
+from aiogram import Bot, F, Router
 from aiogram.fsm.context import FSMContext
+from aiogram.types import Message
 from aiogram.utils.deep_linking import create_start_link
 
-from repositories import RoomRepository, AccountRepository
-
-from telegram.states import RoomStates
-from telegram.keyboards import BACK_KEYBOARD, YES_NO_KEYBOARD, manage_rooms_keyboard
+from repositories import AccountRepository, RoomRepository
 from telegram.helpers import get_first_stage
+from telegram.keyboards import BACK_KEYBOARD, YES_NO_KEYBOARD, manage_rooms_keyboard
+from telegram.states import RoomStates
 
 router = Router()
 

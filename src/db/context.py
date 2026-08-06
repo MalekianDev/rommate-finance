@@ -1,5 +1,7 @@
 from contextvars import ContextVar
+
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from db.connection import session_maker
 
 _session_ctx: ContextVar[AsyncSession | None] = ContextVar("session", default=None)
@@ -28,7 +30,7 @@ def get_current_session() -> AsyncSession:
     """
     Helper for repositories to grab the current active session.
     """
-    
+
     session = _session_ctx.get()
     if session is None:
         raise RuntimeError("No active database session context found!")

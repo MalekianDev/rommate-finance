@@ -2,14 +2,14 @@ from abc import ABC
 from collections.abc import Sequence
 from typing import Any
 
-from sqlalchemy import select, delete
+from sqlalchemy import delete, select
 from sqlalchemy.engine import Row
 from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.orm.interfaces import ORMOption
 from sqlalchemy.sql.elements import ColumnElement
 
-from db.models import Base
 from db.context import get_current_session
+from db.models import Base
 
 
 class BaseRepository[T: Base](ABC):

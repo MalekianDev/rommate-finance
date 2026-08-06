@@ -1,18 +1,22 @@
 import uuid
 
-from aiogram import Bot, Router, F
-from aiogram.filters import CommandStart, CommandObject
+from aiogram import Bot, F, Router
+from aiogram.filters import CommandObject, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from aiogram.utils.deep_linking import create_start_link, decode_payload
 
-from telegram.states import RegistrationStates
-from telegram.helpers import get_first_stage
-from telegram.keyboards import main_menu_keyboard, manage_rooms_keyboard
-
 from db.enums import ProviderEnum
 from db.models import Account, Room, RoomMember
-from repositories import UserRepository, AccountRepository, RoomRepository, RoomMemberRepository
+from repositories import (
+    AccountRepository,
+    RoomMemberRepository,
+    RoomRepository,
+    UserRepository,
+)
+from telegram.helpers import get_first_stage
+from telegram.keyboards import main_menu_keyboard, manage_rooms_keyboard
+from telegram.states import RegistrationStates
 
 router = Router()
 

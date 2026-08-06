@@ -4,7 +4,9 @@ from datetime import datetime
 from sqlalchemy import (
     Boolean,
     DateTime,
-    Enum as SAEnum,
+)
+from sqlalchemy import Enum as SAEnum
+from sqlalchemy import (
     ForeignKey,
     Integer,
     Numeric,

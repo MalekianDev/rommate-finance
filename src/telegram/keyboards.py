@@ -1,5 +1,9 @@
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
-
+from aiogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    KeyboardButton,
+    ReplyKeyboardMarkup,
+)
 
 BACK_BUTTON = [KeyboardButton(text="🔙 Back")]
 BACK_KEYBOARD = ReplyKeyboardMarkup(keyboard=[BACK_BUTTON], resize_keyboard=True)

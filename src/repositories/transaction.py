@@ -1,8 +1,8 @@
 from decimal import Decimal
 
 from db.models import Payment, Split, Transaction
-from schemas.transaction import Transaction as TransactionDraft
 from repositories.base import BaseRepository
+from schemas.transaction import Transaction as TransactionDraft
 
 
 class TransactionRepository(BaseRepository[Transaction]):

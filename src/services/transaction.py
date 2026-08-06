@@ -59,7 +59,7 @@ Rules:
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",
                 response_json_schema=TransactionDraft.model_json_schema(),
-            )
+            ),
         ).text
     )
     draft.created_by_id = created_by_id

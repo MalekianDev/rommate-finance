@@ -1,10 +1,11 @@
-from aiogram import Router, F
-from aiogram.types import Message
+from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
+from aiogram.types import Message
 
 from telegram.helpers import get_first_stage
 
 router = Router()
+
 
 @router.message(F.text == "🔙 Back")
 async def handle_back(message: Message, state: FSMContext | None = None) -> tuple[bool, bool]:
