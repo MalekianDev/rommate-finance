@@ -1,4 +1,4 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
 
 
 BACK_BUTTON = [KeyboardButton(text="🔙 Back")]
@@ -46,4 +46,15 @@ def manage_rooms_keyboard(has_active_room: bool = True) -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(
         keyboard=buttons,
         resize_keyboard=True,
+    )
+
+
+def transaction_confirmation_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text="✅ Confirm", callback_data="transaction:confirm"),
+                InlineKeyboardButton(text="❌ Cancel", callback_data="transaction:cancel"),
+            ]
+        ]
     )

@@ -5,8 +5,8 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
 from settings import Settings
+from telegram.handlers import back_router, room_router, start_router, transaction_router
 from telegram.middlewares.db import DBSessionMiddleware
-from telegram.handlers import start_router, room_router, back_router
 
 settings = Settings()
 dispatcher = Dispatcher()
@@ -15,6 +15,7 @@ dispatcher.update.middleware(DBSessionMiddleware())
 dispatcher.include_router(start_router)
 dispatcher.include_router(back_router)
 dispatcher.include_router(room_router)
+dispatcher.include_router(transaction_router)
 
 
 async def main() -> None:

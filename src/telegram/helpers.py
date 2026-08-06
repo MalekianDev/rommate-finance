@@ -3,9 +3,43 @@ from aiogram.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
 
 from db.models import Account
 from repositories import UserRepository, AccountRepository
+from schemas import TransactionDraft
 
 from telegram.states import RegistrationStates
 from telegram.keyboards import main_menu_keyboard, manage_rooms_keyboard
+
+
+def _format_draft_summary(
+    draft: TransactionDraft,
+    users_map: dict[int, str],
+    category_name: str | None = None,
+) -> str:
+    lines = [
+        "📋 <b>Transaction preview</b>",
+        "",
+        f"<b>Description:</b> {draft.description}",
+        f"<b>Total:</b> {draft.total_amount:,.0f}",
+    ]
+
+    if category_name:
+        lines.append(f"<b>Category:</b> {category_name}")
+
+    lines.append("")
+    lines.append("<b>Payments:</b>")
+    for payment in draft.payments:
+        name = users_map.get(payment.user_id, f"User #{payment.user_id}")
+        lines.append(f"  • {name}: {payment.amount:,.0f}")
+
+    if draft.splits:
+        lines.append("")
+        lines.append("<b>Splits:</b>")
+        for split in draft.splits:
+            name = users_map.get(split.user_id, f"User #{split.user_id}")
+            lines.append(f"  • {name}: {split.amount:,.0f}")
+
+    lines.append("")
+    lines.append("Confirm to save this transaction.")
+    return "\n".join(lines)
 
 
 async def get_first_stage(
