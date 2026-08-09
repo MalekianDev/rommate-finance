@@ -10,7 +10,7 @@ class TransactionRepository(BaseRepository[Transaction]):
     Repository for transaction-related operations.
     """
 
-    model: Transaction = Transaction
+    model = Transaction
 
     async def create(self, obj: TransactionDraft) -> Transaction:
         transaction = Transaction(

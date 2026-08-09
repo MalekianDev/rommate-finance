@@ -41,7 +41,7 @@ async def handle_transaction_draft(message: Message, state: FSMContext) -> None:
 
     try:
         draft, users_map = await build_transaction_draft(
-            message=message.text,
+            message=message.text, # type: ignore
             created_by_id=account.user_id,
         )
     except Exception:
