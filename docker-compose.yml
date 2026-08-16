@@ -1,0 +1,47 @@
+x-app: &app
+  build:
+    context: .
+    dockerfile: Dockerfile
+  env_file:
+    - .env
+  environment:
+    db_host: db
+    db_port: 5432
+  restart: unless-stopped
+  depends_on:
+    migrate:
+      condition: service_completed_successfully
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${db_user:-postgres}
+      POSTGRES_PASSWORD: ${db_password:-postgres}
+      POSTGRES_DB: ${db_name:-sample_db}
+    ports:
+      - "${DB_PUBLISH_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  migrate:
+    <<: *app
+    restart: "no"
+    command: ["alembic", "upgrade", "head"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  telegram:
+    <<: *app
+    command: ["python", "-m", "telegram.main"]
+
+
+volumes:
+  postgres_data:
