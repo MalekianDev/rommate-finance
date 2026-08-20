@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
+from schemas.transaction import Payment
 from services.transaction import build_transaction_draft, normalize_transaction_draft
 
 
@@ -111,8 +112,8 @@ def test_normalize_rejects_splits_for_users_outside_the_room(transaction_draft, 
 
 def test_normalize_merges_duplicate_payers(transaction_draft, room_with_members):
     transaction_draft.payments = [
-        {"user_id": 7, "amount": 20},
-        {"user_id": 7, "amount": 22.5},
+        Payment(user_id=7, amount=20),
+        Payment(user_id=7, amount=22.5),
     ]
 
     draft = normalize_transaction_draft(
