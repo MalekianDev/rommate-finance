@@ -87,6 +87,32 @@ async def test_handle_confirm_room_registers_room_and_sends_invite(monkeypatch, 
 
 
 @pytest.mark.asyncio
+async def test_handle_confirm_room_escapes_html_in_room_name(monkeypatch, message, state, account):
+    state.get_data = AsyncMock(return_value={"room_name": "Ali & Sara <home>"})
+    account_repo = MagicMock()
+    account_repo.get_by_chat_id = AsyncMock(return_value=account)
+    room_repo = MagicMock()
+    room_repo.register_room = AsyncMock(
+        return_value=SimpleNamespace(name="Ali & Sara <home>", invite_token="token-1"),
+    )
+    get_first_stage = AsyncMock(return_value=("invite text", MagicMock()))
+    monkeypatch.setattr("telegram.handlers.room_handler.AccountRepository", lambda: account_repo)
+    monkeypatch.setattr("telegram.handlers.room_handler.RoomRepository", lambda: room_repo)
+    monkeypatch.setattr(
+        "telegram.handlers.room_handler.create_start_link",
+        AsyncMock(return_value="https://t.me/bot?start=invite"),
+    )
+    monkeypatch.setattr("telegram.handlers.room_handler.get_first_stage", get_first_stage)
+
+    await handle_confirm_room(message, state, MagicMock())
+
+    custom_text = get_first_stage.await_args.kwargs["custom_text"]
+    assert "<code>Ali &amp; Sara &lt;home&gt;</code>" in custom_text
+    assert "Ali & Sara" not in custom_text
+    assert "<home>" not in custom_text
+
+
+@pytest.mark.asyncio
 async def test_handle_cancel_room_returns_to_first_stage(monkeypatch, message, state):
     monkeypatch.setattr(
         "telegram.handlers.room_handler.get_first_stage",

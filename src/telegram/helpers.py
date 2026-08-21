@@ -1,3 +1,5 @@
+import html
+
 from aiogram.fsm.context import FSMContext
 from aiogram.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
 
@@ -16,25 +18,25 @@ def _format_draft_summary(
     lines = [
         "📋 <b>Transaction preview</b>",
         "",
-        f"<b>Description:</b> {draft.description}",
+        f"<b>Description:</b> {html.escape(draft.description)}",
         f"<b>Total:</b> {draft.total_amount:,.0f}",
     ]
 
     if category_name:
-        lines.append(f"<b>Category:</b> {category_name}")
+        lines.append(f"<b>Category:</b> {html.escape(category_name)}")
 
     lines.append("")
     lines.append("<b>Payments:</b>")
     for payment in draft.payments:
         name = users_map.get(payment.user_id, f"User #{payment.user_id}")
-        lines.append(f"  • {name}: {payment.amount:,.0f}")
+        lines.append(f"  • {html.escape(name)}: {payment.amount:,.0f}")
 
     if draft.splits:
         lines.append("")
         lines.append("<b>Splits:</b>")
         for split in draft.splits:
             name = users_map.get(split.user_id, f"User #{split.user_id}")
-            lines.append(f"  • {name}: {split.amount:,.0f}")
+            lines.append(f"  • {html.escape(name)}: {split.amount:,.0f}")
 
     lines.append("")
     lines.append("Confirm to save this transaction.")
