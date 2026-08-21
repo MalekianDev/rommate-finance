@@ -108,6 +108,39 @@ async def test_handle_transaction_draft_stores_preview_on_success(
 
 
 @pytest.mark.asyncio
+async def test_handle_transaction_draft_does_not_lock_state_if_preview_fails(
+    monkeypatch,
+    message,
+    state,
+    account,
+    transaction_draft,
+    users_map,
+):
+    processing_msg = MagicMock()
+    processing_msg.edit_text = AsyncMock(side_effect=RuntimeError("can't parse entities"))
+    message.answer = AsyncMock(return_value=processing_msg)
+    account_repo = MagicMock()
+    account_repo.get_by_chat_id = AsyncMock(return_value=account)
+    user_repo = MagicMock()
+    user_repo.has_active_room = AsyncMock(return_value=True)
+    category_repo = MagicMock()
+    category_repo.find = AsyncMock(return_value=None)
+    monkeypatch.setattr("telegram.handlers.transaction_handler.AccountRepository", lambda: account_repo)
+    monkeypatch.setattr("telegram.handlers.transaction_handler.UserRepository", lambda: user_repo)
+    monkeypatch.setattr("telegram.handlers.transaction_handler.CategoryRepository", lambda: category_repo)
+    monkeypatch.setattr(
+        "telegram.handlers.transaction_handler.build_transaction_draft",
+        AsyncMock(return_value=(transaction_draft, users_map)),
+    )
+
+    with pytest.raises(RuntimeError, match="can't parse entities"):
+        await handle_transaction_draft(message, state)
+
+    state.set_state.assert_not_called()
+    state.update_data.assert_not_called()
+
+
+@pytest.mark.asyncio
 async def test_handle_confirm_saves_draft_and_clears_state(
     monkeypatch,
     callback,

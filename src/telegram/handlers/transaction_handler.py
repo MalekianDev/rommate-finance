@@ -57,9 +57,9 @@ async def handle_transaction_draft(message: Message, state: FSMContext) -> None:
 
     summary = _format_draft_summary(draft, users_map, category_name=category_name)
 
+    await processing_msg.edit_text(summary, reply_markup=transaction_confirmation_keyboard())
     await state.update_data(draft=draft.model_dump(), users_map=users_map)
     await state.set_state(TransactionStates.confirming)
-    await processing_msg.edit_text(summary, reply_markup=transaction_confirmation_keyboard())
 
 
 @router.callback_query(F.data == "transaction:confirm", StateFilter(TransactionStates.confirming))

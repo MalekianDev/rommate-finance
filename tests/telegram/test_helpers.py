@@ -17,6 +17,21 @@ def test_format_draft_summary_includes_category_payments_and_splits(transaction_
     assert "Confirm to save this transaction." in summary
 
 
+def test_format_draft_summary_escapes_html_in_user_controlled_fields(transaction_draft, users_map):
+    transaction_draft.description = "Lunch at H&M <store>"
+    users_map[7] = "Sam & Alex"
+    users_map[8] = "Ali > Sara"
+    summary = _format_draft_summary(transaction_draft, users_map, category_name="Food & Drink")
+
+    assert "Lunch at H&amp;M &lt;store&gt;" in summary
+    assert "Sam &amp; Alex" in summary
+    assert "Ali &gt; Sara" in summary
+    assert "Food &amp; Drink" in summary
+    assert "H&M" not in summary
+    assert "<store>" not in summary
+    assert "Sam & Alex" not in summary
+
+
 def test_format_draft_summary_falls_back_for_unknown_users_and_omits_empty_sections(transaction_draft):
     transaction_draft.splits = []
     transaction_draft.category_id = None

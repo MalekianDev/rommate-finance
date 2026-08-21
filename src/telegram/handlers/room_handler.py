@@ -1,3 +1,5 @@
+import html
+
 from aiogram import Bot, F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
@@ -48,12 +50,17 @@ async def handle_confirm_room(message: Message, state: FSMContext, bot: Bot) -> 
     account = await AccountRepository().get_by_chat_id(chat_id=message.from_user.id)
     room = await RoomRepository().register_room(name=data["room_name"], created_by=account.user)
 
+    invite_link = await create_start_link(bot, room.invite_token, encode=True)
+    room_name = html.escape(room.name or "")
     text, keyboard = await get_first_stage(
         chat_id=message.from_user.id,
         state=state,
         account=account,
-        custom_text=f"✅ Room <code>{room.name}</code> created.\n\nNow you should send this URL to your roommates:\n\n"
-        f"<a href='{await create_start_link(bot, room.invite_token, encode=True)}'>INVITE LINK</a>",
+        custom_text=(
+            f"✅ Room <code>{room_name}</code> created.\n\n"
+            "Now you should send this URL to your roommates:\n\n"
+            f"<a href='{invite_link}'>INVITE LINK</a>"
+        ),
     )
     await message.answer(text, parse_mode="HTML", reply_markup=keyboard)
 
