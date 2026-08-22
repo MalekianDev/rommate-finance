@@ -6,7 +6,7 @@ from sqlalchemy import delete, select
 
 from db.context import DBContext
 from db.enums import ProviderEnum
-from db.models import Payment, Room, RoomMember, Split, Transaction, User
+from db.models import Account, Payment, Room, RoomMember, Split, Transaction, User
 from repositories.room import RoomRepository
 from repositories.transaction import TransactionRepository
 from repositories.user import UserRepository
@@ -64,5 +64,6 @@ async def test_create_persists_toman_deposit_scale_amounts():
             await session.execute(delete(Transaction).where(Transaction.created_by_id.in_([sam.id, ali.id])))
             await session.execute(delete(RoomMember).where(RoomMember.user_id.in_([sam.id, ali.id])))
             await session.execute(delete(Room).where(Room.created_by_id == sam.id))
+            await session.execute(delete(Account).where(Account.user_id.in_([sam.id, ali.id])))
             await session.execute(delete(User).where(User.id.in_([sam.id, ali.id])))
             await session.commit()
