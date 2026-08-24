@@ -2,6 +2,27 @@
 
 Shared expense tracker for roommates. Core domain logic (DB, repositories, services, schemas) is interface-agnostic; **Telegram** is the first client.
 
+
+
+## Motivation
+
+I started this project as a way to get back into software development after being away from technical work for several months due to the prolonged internet shutdowns in Iran.
+
+During that time, software development continued to evolve rapidly. New AI-assisted development workflows and tools, including coding agents such as Cursor, became increasingly integrated into the software development lifecycle. Being disconnected from the internet meant that I had very little opportunity to experience these changes firsthand or incorporate them into my own development workflow.
+
+After moving to Armenia, I decided to use this project as a practical way to bridge that gap.
+
+At the same time, I needed a simple way to keep track of shared expenses with my roommate. Rather than building a one-off personal tool, I decided to turn it into a proper open-source project and use it as an opportunity to:
+
+- Get back into hands-on software development and refresh technical knowledge I hadn't used recently.
+- Revisit modern Python backend development through a real-world project.
+- Explore how AI can be integrated into the software development lifecycle and my own development workflow.
+- Experiment with AI-assisted development and natural-language expense entry using Gemini.
+- Build something that solves a real problem in my day-to-day life.
+- Add a complete, practical open-source project to my GitHub.
+
+The goal isn't to build the most sophisticated expense tracker. Instead, this project is a practical way for me to get back to building software, catch up with changes in modern development practices, experiment with AI-assisted development, and learn by working on a real problem.
+
 ## Features
 
 - User registration via Telegram
@@ -9,6 +30,8 @@ Shared expense tracker for roommates. Core domain logic (DB, repositories, servi
 - Natural-language expense entry (Gemini → structured draft)
 - Confirm / cancel before save
 - Split payments across room members
+
+
 
 ## Stack
 
@@ -18,6 +41,8 @@ Shared expense tracker for roommates. Core domain logic (DB, repositories, servi
 - PostgreSQL 16
 - Google Gemini (`google-genai`)
 - Docker Compose
+
+
 
 ## Project layout
 
@@ -56,7 +81,6 @@ cp sample.env .env
 | `db_port`                             | Postgres port (default `5432`)                 |
 | `db_user` / `db_password` / `db_name` | Database credentials                           |
 | `debug_mode`                          | SQLAlchemy echo when `True`                    |
-
 
 
 
@@ -139,6 +163,8 @@ pytest -s tests/repositories/test_account.py   # show prints
 ```
 
 Repository tests mock the DB session and assert SQL/session usage; they do not hit a real database.
+
+
 
 ## License
 
